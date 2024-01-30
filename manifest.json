@@ -1,0 +1,9 @@
+{
+  "name": "LaunchRandom",
+  "version_number": "1.0.0",
+  "description": "Pull the Lever will launch to random moon.",
+  "website_url": "",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ]
+}
