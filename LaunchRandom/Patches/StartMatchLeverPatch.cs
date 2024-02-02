@@ -12,50 +12,59 @@ namespace LaunchRandom.Patches
     
     public class StartMatchLeverPatch
     {
-        public PluginConfig cfg;
+		public PluginConfig cfg;
 
-        [HarmonyPatch("BeginHoldingInteractOnLever")]
-        [HarmonyPrefix]
-        static void ChangeHoldingLeverTime(ref InteractTrigger ___triggerScript)
-        {
-                ___triggerScript.timeToHold = 0.5f;
-        }
+		public ManualLogSource mls;
 
-        [HarmonyPatch("PullLever")]
-        [HarmonyPrefix]
-        static void Launch_RandomCore(ref bool ___leverHasBeenPulled)
-        {
-/*            for(int i = 0; i < RDManager.Instance.moonsWeightExcept.Length; i++)
-            {
-                Debug.Log("moonsWeight:" + RDManager.Instance.moonsWeightExcept[i] +
-                    "moons:" + RDManager.Instance.moonsLevelIDExcept[i]);
-            }*/
+		[HarmonyPatch("BeginHoldingInteractOnLever")]
+		[HarmonyPrefix]
+		private static void ChangeHoldingLeverTime(ref InteractTrigger ___triggerScript)
+		{
+			___triggerScript.timeToHold = 0.5f;
+		}
 
-            //sceneName: Level + levelID + planetName(except route)
-            if (TimeOfDay.Instance.daysUntilDeadline <= 0)
-            {
-                RDManager.Instance.startOfRoundInstance.ChangeLevel(RDManager.Instance.companyBuildingLevelID);
-            }
-            else
-            {
-                if (___leverHasBeenPulled && RDManager.Instance.cfg.RANDOM_ENABLE_ANOTHER)
-                {
-                    RDManager.Instance.BalanceOfMoonsExcept();
-                    RDManager.Instance.startOfRoundInstance.ChangeLevel(RDManager.Instance.StartToRandomLevelAnother());
-                    return;
-                }
-                if (___leverHasBeenPulled && RDManager.Instance.cfg.RANDOM_ENABLE)
-                {
-                    if (RDManager.Instance.startOfRoundInstance.gameStats.daysSpent != 0 
-                        &&
-                        (RDManager.Instance.startOfRoundInstance.gameStats.daysSpent % RDManager.Instance.levelDay == 0))
-                    {
-                        RDManager.Instance.BalanceOfMoons();
-                    }
-                    RDManager.Instance.startOfRoundInstance.ChangeLevel(RDManager.Instance.StartToRandomLevel());
-                    return;
-                }
-            }
-        }
-    }
+		[HarmonyPatch("PullLever")]
+		[HarmonyPrefix]
+		private static void Launch_RandomCore(ref bool ___leverHasBeenPulled)
+		{
+			int num = 0;
+			RDManager.Instance.preLevel = RDManager.Instance.startOfRoundInstance.currentLevel.levelID;
+			RDManager.mls.LogInfo("- preLevel:" + RDManager.Instance.preLevel);
+			if (TimeOfDay.Instance.daysUntilDeadline <= 0)
+			{
+				RDManager.Instance.startOfRoundInstance.ChangeLevel(RDManager.Instance.companyBuildingLevelID);
+			}
+			else if (___leverHasBeenPulled && RDManager.Instance.randomEnableAnother)
+			{
+				RDManager.Instance.BalanceOfMoonsExcept();
+				num = RDManager.Instance.StartToRandomLevelAnother();
+				if (!RDManager.Instance.repeatLaunch)
+				{
+					while (num == RDManager.Instance.preLevel)
+					{
+						num = RDManager.Instance.StartToRandomLevelAnother();
+					}
+				}
+				RDManager.Instance.InputTestInfo();
+				RDManager.Instance.startOfRoundInstance.ChangeLevel(num);
+			}
+			else
+			{
+				if (!___leverHasBeenPulled || !RDManager.Instance.randomEnable)
+				{
+					return;
+				}
+				RDManager.Instance.BalanceOfMoons();
+				num = RDManager.Instance.StartToRandomLevel();
+				if (!RDManager.Instance.repeatLaunch)
+				{
+					while (num == RDManager.Instance.preLevel)
+					{
+						num = RDManager.Instance.StartToRandomLevel();
+					}
+				}
+				RDManager.Instance.startOfRoundInstance.ChangeLevel(num);
+			}
+		}
+	}
 }
