@@ -7,6 +7,10 @@ When the last day, it will go to company.
 
 Just need the host setup this mod.And need host pull the lever when you want to start the ship to other moon.
 
+
+## Problems
+If have any debug or advise, can reports in GitHub: https://github.com/ovofnl/LC---Launch-Random
+
 ## Settings
 
 There are 2 ways to config it:
