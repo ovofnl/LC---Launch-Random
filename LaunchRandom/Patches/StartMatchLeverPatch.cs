@@ -8,8 +8,8 @@ using Random = System.Random;
 
 namespace LaunchRandom.Patches
 {
+	delegate bool judge();
     [HarmonyPatch(typeof(StartMatchLever))]
-    
     public class StartMatchLeverPatch
     {
 		public PluginConfig cfg;
@@ -28,8 +28,9 @@ namespace LaunchRandom.Patches
 		private static void Launch_RandomCore(ref bool ___leverHasBeenPulled)
 		{
 			int num = 0;
+			StartMatchLeverPatch instance = new StartMatchLeverPatch();
 			RDManager.Instance.preLevel = RDManager.Instance.startOfRoundInstance.currentLevel.levelID;
-			RDManager.mls.LogInfo("- preLevel:" + RDManager.Instance.preLevel);
+			//RDManager.mls.LogInfo("- preLevel:" + RDManager.Instance.preLevel);
 			if (TimeOfDay.Instance.daysUntilDeadline <= 0)
 			{
 				RDManager.Instance.startOfRoundInstance.ChangeLevel(RDManager.Instance.companyBuildingLevelID);
@@ -40,12 +41,12 @@ namespace LaunchRandom.Patches
 				num = RDManager.Instance.StartToRandomLevelAnother();
 				if (!RDManager.Instance.repeatLaunch)
 				{
-					while (num == RDManager.Instance.preLevel)
+					while (instance.ThreeDaysJudge(RDManager.Instance.preLevel, num))
 					{
 						num = RDManager.Instance.StartToRandomLevelAnother();
 					}
 				}
-				RDManager.Instance.InputTestInfo();
+				//RDManager.Instance.InputTestInfo();
 				RDManager.Instance.startOfRoundInstance.ChangeLevel(num);
 			}
 			else
@@ -66,5 +67,30 @@ namespace LaunchRandom.Patches
 				RDManager.Instance.startOfRoundInstance.ChangeLevel(num);
 			}
 		}
+
+		//当当前天数<=4, 随机到paid moon时将会继续随机生成。
+		public bool ThreeDaysJudge(int preLevel, int currentLevel)
+        {
+			bool judge = false;
+			if(RDManager.Instance.startOfRoundInstance.gameStats.daysSpent <= 4)
+            {
+				if (RDManager.Instance.balanceRiskLevelEnable)
+				{
+					if (RDManager.Instance.moonsBalance[currentLevel] == 0)
+					{
+						judge = true;
+					}
+				}
+				else
+				{
+					if (RDManager.Instance.moonsBalance[currentLevel] == 1)
+					{
+						judge = true;
+					}
+				}
+			}
+			//RDManager.mls.LogInfo("judge:" + judge);
+			return (preLevel == currentLevel) || judge;
+        }
 	}
 }

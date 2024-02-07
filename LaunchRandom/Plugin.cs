@@ -14,7 +14,7 @@ namespace LaunchRandom
     {
         private const string modGUID = "ovofnl.LaunchRandom";
         private const string modName = "Launch Random";
-        private const string modVersion = "1.0";
+        private const string modVersion = "1.2.0";
 
         private readonly Harmony harmony = new Harmony(modGUID);
 

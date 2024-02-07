@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 
 namespace LaunchRandom.Configs
 {
-    public class PluginConfig
-    {
+	public class PluginConfig
+	{
 		private readonly ConfigFile configFile;
 
 		public bool RANDOM_ENABLE { get; private set; }
 		public bool RANDOM_ENABLE_ANOTHER { get; private set; }
 		public bool LEVEL_BALANCE_ENABLE { get; private set; }
 		public bool REPEAT_LAUNCH { get; private set; }
-        public bool BALANCE_RISKLEVEL_ENABLE { get; private set; }
+		public bool BALANCE_RISKLEVEL_ENABLE { get; private set; }
+		public bool THREE_DAYS_SETTING {get ; private set;}
         public string LEVEL_NAME { get; private set; }
 		public string LEVEL_NAME_ANOTHER { get; private set; }
 		public string LEVEL_WEIGHT { get; private set; }
@@ -51,7 +52,8 @@ namespace LaunchRandom.Configs
 				section, 
 				"Allow Random Launch(Except)", 
 				defaultValue: true, 
-				"If true, when the lever has been pulled, it will launch to moon randomly,for the last day it will go to company building."
+				"If true, when the lever has been pulled, it will launch to moon randomly,for the last day it will go to company building." +
+				"Prefer to use this."
 				);
 			LEVEL_BALANCE_ENABLE = ConfigEntry(
 				section, 
@@ -70,6 +72,12 @@ namespace LaunchRandom.Configs
 				"Allow Moons Level(Except)",
 				defaultValue: true,
 				"If you install moon mod, take it to true is better."
+				);
+			THREE_DAYS_SETTING = ConfigEntry(
+				section,
+				"Allow to paid moon before 3 days",
+				defaultValue: false,
+				"If true, it will allow to launch to paid moon before 3 days."
 				);
 			section = "Moons Settings";
 			LEVEL_NAME = ConfigEntry(

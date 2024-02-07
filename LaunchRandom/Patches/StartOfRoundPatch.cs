@@ -16,6 +16,7 @@ namespace LaunchRandom.Patches
         static void GetInstance(StartOfRound __instance)
         {
             RDManager.Instance.startOfRoundInstance = __instance;
+            RDManager.Instance.InputMoonsInfo();
             RDManager.Instance.GetMoonsInfoExcept();
             RDManager.Instance.GetMoonsWeightExcept();
         }
