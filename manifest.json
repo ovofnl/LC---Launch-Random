@@ -1,6 +1,6 @@
 {
   "name": "LaunchRandom",
-  "version_number": "1.2.0",
+  "version_number": "1.3.1",
   "description": "Pull the Lever will launch to random moon.",
   "website_url": "",
   "dependencies": [
